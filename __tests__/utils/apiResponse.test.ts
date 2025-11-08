@@ -61,7 +61,6 @@ describe('ApiResponse', () => {
       expect(mockRes.json).toHaveBeenCalledWith({
         success: true,
         message: 'No data',
-        data: null,
       });
       expect(result).toBe(mockRes);
     });
@@ -75,7 +74,6 @@ describe('ApiResponse', () => {
       expect(mockRes.json).toHaveBeenCalledWith({
         success: false,
         message: 'Error',
-        errors: null,
       });
       expect(result).toBe(mockRes);
     });
@@ -100,7 +98,6 @@ describe('ApiResponse', () => {
       expect(mockRes.json).toHaveBeenCalledWith({
         success: false,
         message: 'Not found',
-        errors: null,
       });
       expect(result).toBe(mockRes);
     });

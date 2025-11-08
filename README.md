@@ -14,7 +14,7 @@ Backend API untuk aplikasi jasa tukang bangunan yang memungkinkan client memesan
 - Jest untuk testing (unit tests untuk utilities)
 - Winston logging
 - Environment configuration dengan Zod
-- Prisma ORM setup (schema siap, tapi belum ada migration)
+- **Prisma ORM setup lengkap dengan schema database**
 - Express app basic setup
 - Git setup dengan .gitignore
 
@@ -143,9 +143,9 @@ npm test -- __tests__/utils/apiError.test.ts
 npm test -- --coverage
 ```
 
-## 📊 Database Schema (Direncanakan)
+## 📊 Database Schema
 
-> **Catatan**: Schema Prisma sudah dirancang, tapi migrations dan implementasi belum dilakukan.
+> **✅ Sudah Diimplementasi**: Schema Prisma lengkap dengan semua model, relasi, dan enum. Siap untuk migration.
 
 ### Entity Relationship Diagram (ERD)
 
@@ -168,14 +168,16 @@ User (client) (1) -----> (many) Booking <----- (1) Service
 
 ### Models (Prisma Schema)
 
-- **User**: Pengguna sistem (client/admin) - _belum diimplementasi_
-- **Profile**: Detail tambahan user - _belum diimplementasi_
-- **Role**: Role sistem - _belum diimplementasi_
-- **UserRole**: Pivot table untuk user-role - _belum diimplementasi_
-- **Service**: Jenis jasa - _belum diimplementasi_
-- **Booking**: Pemesanan jasa - _belum diimplementasi_
-- **Review**: Ulasan booking - _belum diimplementasi_
-- **Payment**: Data pembayaran - _belum diimplementasi_
+- **✅ User**: Pengguna sistem (client/admin) - menggunakan UUID
+- **✅ Profile**: Detail tambahan user - menggunakan UUID
+- **✅ Role**: Role sistem (client, admin) - menggunakan UUID
+- **✅ UserRole**: Pivot table untuk many-to-many user-role - menggunakan UUID
+- **✅ Layanan**: Jenis jasa (konstruksi, perbaikan, maintenance) - menggunakan UUID
+- **✅ Pemesanan**: Pemesanan jasa - menggunakan UUID
+- **✅ Ulasan**: Ulasan booking - menggunakan UUID
+- **✅ Pembayaran**: Data pembayaran (integrasi Midtrans) - menggunakan UUID
+
+Semua model menggunakan **UUID sebagai primary key** dan memiliki `createdAt` serta `updatedAt`. Nama tabel dalam database menggunakan bahasa Indonesia.
 
 Lihat `prisma/schema.prisma` untuk detail schema lengkap.
 
@@ -221,16 +223,17 @@ backend-worker/
 Karena proyek masih dalam development awal, berikut roadmap implementasi:
 
 1. **✅ Setup Infrastructure**: Project structure, TypeScript, testing, linting.
-2. **🔄 Database Setup**: Jalankan Prisma migrations dan seed data awal.
-3. **🔄 Authentication**: Implement JWT auth dengan middleware.
-4. **📋 User Management**: CRUD untuk User, Profile, dan Role.
-5. **📋 Service Management**: CRUD untuk Service categories.
-6. **📋 Booking System**: API untuk create/update booking dengan status tracking.
-7. **📋 Payment Integration**: Integrasi Midtrans untuk payment processing.
-8. **📋 Review System**: API untuk ulasan dan rating.
-9. **📋 Testing Expansion**: Tambah integration tests untuk semua API endpoints.
-10. **📋 API Documentation**: Swagger/OpenAPI docs.
-11. **📋 Deployment**: Setup CI/CD dan production deployment.
+2. **✅ Database Schema**: Prisma schema lengkap dengan semua model dan relasi.
+3. **✅ Database Setup**: Migration berhasil, database siap digunakan dengan data seed awal.
+4. **🔄 Authentication**: Implement JWT auth dengan middleware.
+5. **📋 User Management**: CRUD untuk User, Profile, dan Role.
+6. **📋 Service Management**: CRUD untuk Service categories.
+7. **📋 Booking System**: API untuk create/update booking dengan status tracking.
+8. **📋 Payment Integration**: Integrasi Midtrans untuk payment processing.
+9. **📋 Review System**: API untuk ulasan dan rating.
+10. **📋 Testing Expansion**: Tambah integration tests untuk semua API endpoints.
+11. **📋 API Documentation**: Swagger/OpenAPI docs.
+12. **📋 Deployment**: Setup CI/CD dan production deployment.
 
 ## 🧪 Testing
 

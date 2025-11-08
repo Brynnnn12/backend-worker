@@ -12,3 +12,141 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+enum Kategori {
+  KONSTRUKSI
+  PERBAIKAN
+  PEMELIHARAAN
+}
+
+enum StatusPesanan {
+  MENUNGGU
+  DIKONFIRMASI
+  SEDANG_BERLANGSUNG
+  SELESAI
+  DIBATALKAN
+}
+
+enum MetodePembayaran {
+  TUNAI
+  TRANSFER
+}
+
+enum StatusPembayaran {
+  MENUNGGU
+  DIBAYAR
+  GAGAL
+}
+
+model User {
+  id        String    @id @default(uuid()) @db.VarChar(36)
+  email     String    @unique
+  password  String
+  profile   Profile?
+  userRoles UserRole[]
+  pemesanan Pemesanan[]
+  ulasan    Ulasan[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("user")
+}
+
+model Profile {
+  id        String   @id @default(uuid()) @db.VarChar(36)
+  userId    String   @unique
+  name      String?
+  phone     String?
+  address   String?
+  bio       String?
+  avatar  String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("profile")
+}
+
+model Role {
+  id          String     @id @default(uuid()) @db.VarChar(36)
+  name        String     @unique
+  description String?
+  userRoles   UserRole[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("role")
+}
+
+model UserRole {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  userId     String
+  roleId     String
+  assignedAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role       Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, roleId])
+  @@map("user_role")
+}
+
+model Layanan {
+  id             String     @id @default(uuid()) @db.VarChar(36)
+  nama           String
+  deskripsi      String?
+  kategori       Kategori   @default(KONSTRUKSI)
+  hargaPerJam    Decimal    @db.Decimal(10, 2)
+  pemesanan      Pemesanan[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@map("layanan")
+}
+
+model Pemesanan {
+  id                 String     @id @default(uuid()) @db.VarChar(36)
+  userId             String
+  layananId          String
+  status             StatusPesanan @default(MENUNGGU)
+  tanggalPemesanan   DateTime
+  estimasiDurasi     Int        // dalam jam
+  totalHarga         Decimal    @db.Decimal(10, 2)
+  notes              String?
+  user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  layanan            Layanan    @relation(fields: [layananId], references: [id])
+  ulasan             Ulasan?
+  pembayaran         Pembayaran?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  @@map("pemesanan")
+}
+
+model Ulasan {
+  id          String    @id @default(uuid()) @db.VarChar(36)
+  pemesananId String    @unique
+  userId      String
+  rating      Int       @default(5)
+  komentar    String?
+  pemesanan   Pemesanan @relation(fields: [pemesananId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+
+  @@map("ulasan")
+}
+
+model Pembayaran {
+  id          String        @id @default(uuid()) @db.VarChar(36)
+  pemesananId String        @unique
+  jumlah      Decimal       @db.Decimal(10, 2)
+  metode      MetodePembayaran @default(TUNAI)
+  status      StatusPembayaran @default(MENUNGGU)
+  orderId     String?       @unique // Untuk Midtrans
+  snapToken   String?       // Untuk Midtrans redirect
+  dibayarPada DateTime?
+  pemesanan   Pemesanan     @relation(fields: [pemesananId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now())
+
+  @@map("pembayaran")
+}

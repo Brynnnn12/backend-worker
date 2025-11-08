@@ -19,5 +19,6 @@ module.exports = {
   rules: {
     "prettier/prettier": "error",
     // tambahkan rule custom jika perlu
+    
   },
 };

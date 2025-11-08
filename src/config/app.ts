@@ -2,8 +2,8 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import { logger } from '../utils/logger';
-// import { errorHandler, notFound } from '../app/middlewares/error.middleware';
-// import routes from '../app/routes';
+import routes from '../routes';
+import { errorHandler, notFound } from '../app/middlewares/error.middleware';
 
 const app: Application = express();
 
@@ -31,15 +31,15 @@ app.use(
 app.use('/uploads', express.static('uploads'));
 
 // Routes
-// app.use('/api/v1', routes);
+app.use('/api/v1', routes);
 
-// Health check
+// Health check - moved to routes but keeping here as fallback
 app.get('/health', (req, res) => {
   res.status(200).send('OK');
 });
 
 // Error handling
-// app.use(notFound);
-// app.use(errorHandler);
+app.use(notFound);
+app.use(errorHandler);
 
 export default app;

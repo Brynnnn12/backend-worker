@@ -19,8 +19,10 @@ export class ApiResponse {
     const response: ApiResponseData = {
       success: true,
       message,
-      data,
     };
+    if (data !== null && data !== undefined) {
+      response.data = data;
+    }
     if (pagination) {
       response.pagination = pagination;
     }
@@ -31,8 +33,10 @@ export class ApiResponse {
     const response: ApiResponseData = {
       success: false,
       message,
-      errors,
     };
+    if (errors !== null && errors !== undefined) {
+      response.errors = errors;
+    }
     return res.status(statusCode).json(response);
   }
 }
